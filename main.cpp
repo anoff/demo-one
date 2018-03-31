@@ -1,9 +1,6 @@
 #include <iostream>
 #include "demo.h"
 
-#define XRES 800
-#define YRES 600
-
 int main(int argc, char* argv[])
 {
   SDL_Window* window = NULL;

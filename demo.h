@@ -10,4 +10,8 @@ using std::uint32_t;
 void demo_init();
 void demo_do(SDL_Surface *surface);
 
+#define XRES 800
+#define YRES 600
+const float ASPECT = (float)XRES/YRES;
+
 #endif
