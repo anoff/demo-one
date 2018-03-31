@@ -4,5 +4,5 @@ build asmjs:
    - em++ *.cpp -o out.html -s USE_SDL=2 -O3 --shell-file shell_minimal.html
   artifacts:
     paths:
-    - out.html
+    - out.html*
     - out.js
