@@ -31,8 +31,14 @@ void Perlin::initPerlin() {
     }
 }
 
+float fade(const float t)
+{
+	return t * t * (3.f - 2.f * t);
+}
+
 // Compute Perlin noise at coordinates x, y
 float Perlin::getPerlin(float x, float y) {
+
     x = clamp(x, 0, XRES);
     y = clamp(y, 0, YRES);
     // Determine grid cell coordinates
@@ -43,8 +49,8 @@ float Perlin::getPerlin(float x, float y) {
 
     // Determine interpolation weights
     // Could also use higher order polynomial/s-curve here
-    float sx = x - (float)x0;
-    float sy = y - (float)y0;
+    float sx = fade(x - (float)x0);
+    float sy = fade(y - (float)y0);
 
     // Interpolate between grid point gradients
     float n0, n1, ix0, ix1, value;
