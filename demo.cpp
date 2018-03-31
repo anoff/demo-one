@@ -49,8 +49,13 @@ void demo_do(SDL_Surface *surface, int delta) {
 	double zoom = 0*sin((float)cnt/10);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			float val = baseP.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(50 + zoom*30), (y + YRES/4 + zoom)/(float)(50 + zoom*30));
-			put_pixel32(surface, x, y, hot_cold(val + .5));
+			int radius = sqrt(pow(abs(x - XRES/2), 2) + pow(abs(y - YRES/2), 2));
+			if (radius < XRES/3) {
+				float val = baseP.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(50 + zoom*30), (y + YRES/4 + zoom)/(float)(50 + zoom*30));
+				put_pixel32(surface, x, y, hot_cold(val + .5));
+			} else {
+				put_pixel32(surface, x, y, 0x0);
+			}
 		}
 	}
 	addPerlinGradient(baseP, velP);
