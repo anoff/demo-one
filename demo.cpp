@@ -36,9 +36,8 @@ std::array<float,2> calculateXY(float x0, float y0, float radius, float angle) {
 	float y = y0 + cos(angle)*radius;
 	return {x, y};
 }
-void set_spots(spot* spots, int spotCount, float angleOffset) {
-	int circleRadius = 230;
-	int spotRadius = 80;
+void set_spots(spot* spots, int spotCount, float angleOffset, float circleRadius) {
+	int spotRadius = 100;
 
 	for (int i = 0; i < spotCount; i++) {
 		std::array<float,2> pos = calculateXY(XRES/2, YRES/2, circleRadius, i * 2* 3.1415 /spotCount + angleOffset);
@@ -47,10 +46,11 @@ void set_spots(spot* spots, int spotCount, float angleOffset) {
 		spots[i].radius = spotRadius;
 	}
 }
+float circleRadius = 230;
 void demo_init() {
 	baseP.initPerlin();
 	velP.initPerlin();
-	set_spots(spots, SPOT_COUNT, 0);
+	set_spots(spots, SPOT_COUNT, 0, circleRadius);
 }
 
 void addPerlinGradient(Perlin &p1, Perlin &p2) {
@@ -87,5 +87,5 @@ void demo_do(SDL_Surface *surface, int delta) {
 	if (cnt % (int)(200 / delta) == 0) {
 		velP.initPerlin();
 	}
-	set_spots(spots, SPOT_COUNT, angleOffset+=abs(sin((float)cnt/10)/10));
+	set_spots(spots, SPOT_COUNT, angleOffset+=abs(sin((float)cnt/10)/10), circleRadius += 10*sin((float)cnt/3));
 }
