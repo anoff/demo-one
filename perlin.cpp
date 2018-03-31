@@ -5,7 +5,7 @@
 // Weight w should be in the range [0.0, 1.0]
 
 float lerp(float a0, float a1, float w) {
-  return (1.0 - w)*a0 + w*a1;
+  return (1.f - w)*a0 + w*a1;
 }
 // Computes the dot product of the distance and gradient vectors.
 float Perlin::dotGridGradient(int ix, int iy, float x, float y) {
@@ -20,8 +20,8 @@ float Perlin::dotGridGradient(int ix, int iy, float x, float y) {
 void Perlin::initPerlin() {
   for (int y = 0; y < YRES; y++) {
       for (int x = 0; x < XRES; x++) {
-        float fx = rand() % 1000 - 500;
-        float fy = rand() % 1000 - 500;
+        float fx = rand() % 1000 - 500.f;
+        float fy = rand() % 1000 - 500.f;
         float d = sqrt(fx*fx + fy*fy);
         fx /= d;
         fy /= d;
@@ -36,9 +36,9 @@ float Perlin::getPerlin(float x, float y) {
     x = clamp(x, 0, XRES);
     y = clamp(y, 0, YRES);
     // Determine grid cell coordinates
-    int x0 = floor(x);
+    int x0 = (int)floor(x);
     int x1 = x0 + 1;
-    int y0 = floor(y);
+    int y0 = (int)floor(y);
     int y1 = y0 + 1;
 
     // Determine interpolation weights
@@ -56,8 +56,8 @@ float Perlin::getPerlin(float x, float y) {
     ix1 = lerp(n0, n1, sx);
     value = lerp(ix0, ix1, sy);
 
-    if (x == round(x) || y == round(y)) {
+    /*if (x == round(x) || y == round(y)) {
       return 1;
-    }
+    }*/
     return value;
 }
