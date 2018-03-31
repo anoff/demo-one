@@ -13,5 +13,9 @@ void demo_init()
 
 void demo_do(SDL_Surface *surface)
 {
-	for (int y = 0; y<surface->h; y++) for (int x = 0; x<surface->w; x++) put_pixel32(surface, x, y, 255);
+	for (int y = 0; y<surface->h; y++) {
+		for (int x = 0; x<surface->w; x++) {
+			put_pixel32(surface, x, y, (rand() % 2) ? 0xffffff : 0x0);
+		}
+	}
 }

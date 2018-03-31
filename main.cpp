@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
   {
 	  demo_do(screenSurface);
 	  SDL_UpdateWindowSurface(window);
-	  SDL_Delay(200);
+	  SDL_Delay(16);
 	  SDL_Event event;
 	  if (SDL_PollEvent(&event))
 	  {

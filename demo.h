@@ -2,8 +2,9 @@
 #define DEMO_H
 
 #define SDL_MAIN_HANDLED
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <cstdint>
+#include <cstdlib>
 using std::uint32_t;
 
 void demo_init();
