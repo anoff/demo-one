@@ -10,4 +10,4 @@ docker-emcc:
   -v $(shell pwd):/src \
   -u emscripten \
   trzeci/emscripten-slim \
-  em++ *.cpp -o out.html -s USE_SDL=2 --shell-file shell_minimal.html
+  em++ *.cpp -o out.html -O3 -s USE_SDL=2 --shell-file shell_minimal.html
