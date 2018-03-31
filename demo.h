@@ -9,6 +9,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <cstdint>
+#include <array>
 #include <cstdlib>
 #include <cmath>
 using std::uint32_t;

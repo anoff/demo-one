@@ -1,7 +1,14 @@
 #include "demo.h"
 
+#define SPOT_COUNT 5
+
 Perlin baseP;
 Perlin velP;
+struct spot {
+	int x;
+	int y;
+	int radius;
+} spots[SPOT_COUNT];
 
 void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel) {
 	Uint32 *pixels = reinterpret_cast<uint32_t*>(surface->pixels);
@@ -24,9 +31,26 @@ uint32_t hot_cold(float f) {
 	return color(static_cast<int>(255.f * r), static_cast<int>(255.f * g), static_cast<int>(255.f * b));
 }
 
+std::array<float,2> calculateXY(float x0, float y0, float radius, float angle) {
+	float x = x0 + sin(angle)*radius;
+	float y = y0 + cos(angle)*radius;
+	return {x, y};
+}
+void set_spots(spot* spots, int spotCount, float angleOffset) {
+	int circleRadius = 230;
+	int spotRadius = 80;
+
+	for (int i = 0; i < spotCount; i++) {
+		std::array<float,2> pos = calculateXY(XRES/2, YRES/2, circleRadius, i * 2* 3.1415 /spotCount + angleOffset);
+		spots[i].x = pos[0];
+		spots[i].y = pos[1];
+		spots[i].radius = spotRadius;
+	}
+}
 void demo_init() {
 	baseP.initPerlin();
 	velP.initPerlin();
+	set_spots(spots, SPOT_COUNT, 0);
 }
 
 void addPerlinGradient(Perlin &p1, Perlin &p2) {
@@ -44,28 +68,18 @@ void addPerlinGradient(Perlin &p1, Perlin &p2) {
 }
 
 int cnt = 0;
-int spotCenter[] = {0, 0};
-int spotRadius = XRES/10;
+float angleOffset = 0;
 void demo_do(SDL_Surface *surface, int delta) {
 	cnt++;
-	spotRadius = sin((float)cnt/10)*70 + 100;
-	spotCenter[0] += 50;
-	if (spotCenter[0] > XRES) {
-		spotCenter[0] = 0;
-		spotCenter[1] += spotRadius;
-	}
-	if (spotCenter[1] > YRES) {
-		spotCenter[0] = 0;
-		spotCenter[1] = 0;
-	}
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			int radius = sqrt(pow(abs(x - spotCenter[0]), 2) + pow(abs(y - spotCenter[1]), 2));
-			if (radius < spotRadius) {
-				float val = baseP.getPerlin((x + XRES/4)/(float)(50), (y + YRES/4)/(float)(50));
-				put_pixel32(surface, x, y, hot_cold(val + .5));
-			} else {
-				put_pixel32(surface, x, y, 0x0);
+			put_pixel32(surface, x, y, 0x0);
+			for (int s = 0; s < SPOT_COUNT; s++) {
+				int radius = sqrt(pow(abs(x - spots[s].x), 2) + pow(abs(y - spots[s].y), 2));
+				if (radius < spots[s].radius) {
+					float val = baseP.getPerlin((x + XRES/4)/(float)(50), (y + YRES/4)/(float)(50));
+					put_pixel32(surface, x, y, hot_cold(val + .5));
+				}
 			}
 		}
 	}
@@ -73,4 +87,5 @@ void demo_do(SDL_Surface *surface, int delta) {
 	if (cnt % (int)(200 / delta) == 0) {
 		velP.initPerlin();
 	}
+	set_spots(spots, SPOT_COUNT, angleOffset+=abs(sin((float)cnt/10)/10));
 }

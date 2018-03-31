@@ -1,5 +1,11 @@
 # demo fun 🕹
 
+## c++ 
+
+```sh
+make build && make run
+```
+
 ## emscripten
 
 ### code
