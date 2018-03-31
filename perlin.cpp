@@ -56,5 +56,8 @@ float Perlin::getPerlin(float x, float y) {
     ix1 = lerp(n0, n1, sx);
     value = lerp(ix0, ix1, sy);
 
+    if (x == round(x) || y == round(y)) {
+      return 1;
+    }
     return value;
 }

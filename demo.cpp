@@ -29,11 +29,16 @@ void demo_init() {
 	velP.initPerlin();
 }
 
-void addPerlinGradient() {
+void addPerlinGradient(Perlin &p1, Perlin &p2) {
 	for (int y = 0; y < YRES; y++) {
 		for (int x = 0; x < XRES; x++) {
-			baseP.Gradient[y][x][0] += velP.Gradient[y][x][0];
-			baseP.Gradient[y][x][1] += velP.Gradient[y][x][1];
+			float v0 = p1.Gradient[y][x][0] + 0.1 * p2.Gradient[y + 13][x + 13][0];
+			float v1 = p1.Gradient[y][x][1] + 0.1 * p2.Gradient[y + 13][x + 13][1];
+			float d = sqrt(v0*v0 + v1*v1);
+			if (d > 0) {
+				p1.Gradient[y][x][0] = v0/d;
+				p1.Gradient[y][x][1] = v1/d;
+			}
 		}
 	}
 }
@@ -44,12 +49,12 @@ void demo_do(SDL_Surface *surface, int delta) {
 	double zoom = 0*sin((float)cnt/10);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			float val = baseP.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(123 + zoom*30), (y + YRES/4 + zoom)/(float)(231 + zoom*30));
+			float val = baseP.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(50 + zoom*30), (y + YRES/4 + zoom)/(float)(50 + zoom*30));
 			put_pixel32(surface, x, y, hot_cold(val + .5));
 		}
 	}
-	addPerlinGradient();
-	if (cnt % 100) {
+	addPerlinGradient(baseP, velP);
+	if (cnt % (int)(200 / delta) == 0) {
 		velP.initPerlin();
 	}
 }
