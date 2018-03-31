@@ -1,18 +1,8 @@
 #include <iostream>
-#include <cstdint>
-#define SDL_MAIN_HANDLED
-#include <SDL.h>
-
-using std::uint32_t;
+#include "demo.h"
 
 #define XRES 800
 #define YRES 600
-
-void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel)
-{
-	Uint32 *pixels = reinterpret_cast<uint32_t*>(surface->pixels);
-	pixels[ ( y * surface->w ) + x ] = pixel;
-}
 
 int main(int argc, char* argv[])
 {
@@ -34,10 +24,23 @@ int main(int argc, char* argv[])
     std::cerr << "could not create window: " << SDL_GetError() << "\n";
     return 1;
   }
+  demo_init();
   screenSurface = SDL_GetWindowSurface(window);
-  for(int y=0;y<YRES;y++) for(int x=0;x<XRES;x++) put_pixel32(screenSurface, x, y, 255);
-  SDL_UpdateWindowSurface(window);
-  SDL_Delay(2000);
+  bool quit = false;
+  while (!quit)
+  {
+	  demo_do(screenSurface);
+	  SDL_UpdateWindowSurface(window);
+	  SDL_Delay(200);
+	  SDL_Event event;
+	  if (SDL_PollEvent(&event))
+	  {
+		  if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+		  {
+			  quit = true;
+		  }
+	  }
+  }
   SDL_DestroyWindow(window);
   SDL_Quit();
   return 0;
