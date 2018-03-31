@@ -26,6 +26,8 @@ float dotGridGradient(int ix, int iy, float x, float y) {
 
 // Compute Perlin noise at coordinates x, y
 float perlin(float x, float y) {
+		x = clamp(x, 0, XRES);
+		y = clamp(y, 0, YRES);
 		// Determine grid cell coordinates
 		int x0 = floor(x);
 		int x1 = x0 + 1;
@@ -79,11 +81,14 @@ void demo_init() {
 		}
 	}
 }
-
-void demo_do(SDL_Surface *surface) {
+int cnt = 0;
+void demo_do(SDL_Surface *surface, int delta) {
+	cnt++;
+	double zoom = sin((float)cnt/10);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			float p = perlin(x/(float)123, y/(float)231);
+			float p = perlin((x + XRES/4 + zoom*ASPECT)/(float)(123 + zoom*30), (y + YRES/4 + zoom)/(float)(231 + zoom*30));
+			p += zoom;
 			put_pixel32(surface, x, y, hot_cold(p + .5));
 		}
 	}
