@@ -1,6 +1,7 @@
 #include "demo.h"
 
-Perlin p;
+Perlin baseP;
+Perlin velP;
 
 void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel) {
 	Uint32 *pixels = reinterpret_cast<uint32_t*>(surface->pixels);
@@ -24,17 +25,31 @@ uint32_t hot_cold(float f) {
 }
 
 void demo_init() {
-	p.initPerlin();
+	baseP.initPerlin();
+	velP.initPerlin();
 }
+
+void addPerlinGradient() {
+	for (int y = 0; y < YRES; y++) {
+		for (int x = 0; x < XRES; x++) {
+			baseP.Gradient[y][x][0] += velP.Gradient[y][x][0];
+			baseP.Gradient[y][x][1] += velP.Gradient[y][x][1];
+		}
+	}
+}
+
 int cnt = 0;
 void demo_do(SDL_Surface *surface, int delta) {
 	cnt++;
-	double zoom = sin((float)cnt/10);
+	double zoom = 0*sin((float)cnt/10);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			float val = p.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(123 + zoom*30), (y + YRES/4 + zoom)/(float)(231 + zoom*30));
-			val += zoom;
+			float val = baseP.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(123 + zoom*30), (y + YRES/4 + zoom)/(float)(231 + zoom*30));
 			put_pixel32(surface, x, y, hot_cold(val + .5));
 		}
+	}
+	addPerlinGradient();
+	if (cnt % 100) {
+		velP.initPerlin();
 	}
 }
