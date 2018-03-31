@@ -1,6 +1,11 @@
 #ifndef DEMO_H
 #define DEMO_H
 
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <cstdint>
