@@ -75,7 +75,7 @@ void demo_init() {
 			fx /= d;
 			fy /= d;
 			Gradient[y][x][0] = fx;
-			Gradient[y][x][0] = fy;
+			Gradient[y][x][1] = fy;
 		}
 	}
 }
@@ -83,7 +83,7 @@ void demo_init() {
 void demo_do(SDL_Surface *surface) {
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			float p = perlin(x/(float)33/ASPECT, y/(float)33);
+			float p = perlin(x/(float)123, y/(float)231);
 			put_pixel32(surface, x, y, hot_cold(p + .5));
 		}
 	}
