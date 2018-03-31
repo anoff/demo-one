@@ -44,14 +44,25 @@ void addPerlinGradient(Perlin &p1, Perlin &p2) {
 }
 
 int cnt = 0;
+int spotCenter[] = {0, 0};
+int spotRadius = XRES/10;
 void demo_do(SDL_Surface *surface, int delta) {
 	cnt++;
-	double zoom = 0*sin((float)cnt/10);
+	spotRadius = sin((float)cnt/10)*70 + 100;
+	spotCenter[0] += 50;
+	if (spotCenter[0] > XRES) {
+		spotCenter[0] = 0;
+		spotCenter[1] += spotRadius;
+	}
+	if (spotCenter[1] > YRES) {
+		spotCenter[0] = 0;
+		spotCenter[1] = 0;
+	}
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			int radius = sqrt(pow(abs(x - XRES/2), 2) + pow(abs(y - YRES/2), 2));
-			if (radius < XRES/3) {
-				float val = baseP.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(50 + zoom*30), (y + YRES/4 + zoom)/(float)(50 + zoom*30));
+			int radius = sqrt(pow(abs(x - spotCenter[0]), 2) + pow(abs(y - spotCenter[1]), 2));
+			if (radius < spotRadius) {
+				float val = baseP.getPerlin((x + XRES/4)/(float)(50), (y + YRES/4)/(float)(50));
 				put_pixel32(surface, x, y, hot_cold(val + .5));
 			} else {
 				put_pixel32(surface, x, y, 0x0);
