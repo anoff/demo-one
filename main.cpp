@@ -1,16 +1,20 @@
 #include <iostream>
+#include <cstdint>
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
+
+using std::uint32_t;
 
 #define XRES 800
 #define YRES 600
 
-void put_pixel32( SDL_Surface *surface, int x, int y, uint32_t pixel )
+void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel)
 {
 	Uint32 *pixels = reinterpret_cast<uint32_t*>(surface->pixels);
 	pixels[ ( y * surface->w ) + x ] = pixel;
 }
-	
-int main()
+
+int main(int argc, char* argv[])
 {
   SDL_Window* window = NULL;
   SDL_Surface* screenSurface = NULL;
