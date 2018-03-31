@@ -1,14 +1,15 @@
 #include "demo.h"
-
-#define SPOT_COUNT 5
-
-Perlin baseP;
-Perlin velP;
+#define SPOTS_MAX 10
 struct spot {
 	int x;
 	int y;
 	int radius;
-} spots[SPOT_COUNT];
+} spots[SPOTS_MAX];
+
+float circleRadius = 230;
+int spotCount = 5;
+Perlin baseP;
+Perlin velP;
 
 void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel) {
 	Uint32 *pixels = reinterpret_cast<uint32_t*>(surface->pixels);
@@ -46,11 +47,11 @@ void set_spots(spot* spots, int spotCount, float angleOffset, float circleRadius
 		spots[i].radius = spotRadius;
 	}
 }
-float circleRadius = 230;
+
 void demo_init() {
 	baseP.initPerlin();
 	velP.initPerlin();
-	set_spots(spots, SPOT_COUNT, 0, circleRadius);
+	set_spots(spots, spotCount, 0, circleRadius);
 }
 
 void addPerlinGradient(Perlin &p1, Perlin &p2) {
@@ -74,9 +75,9 @@ void demo_do(SDL_Surface *surface, int delta) {
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			put_pixel32(surface, x, y, 0x0);
-			for (int s = 0; s < SPOT_COUNT; s++) {
+			for (int s = 0; s < spotCount; s++) {
 				int radius = sqrt(pow(abs(x - spots[s].x), 2) + pow(abs(y - spots[s].y), 2));
-				if (radius < spots[s].radius) {
+				if (spots[s].x != 0 && spots[s].y != 0 && radius < spots[s].radius) {
 					float val = baseP.getPerlin((x + XRES/4)/(float)(50), (y + YRES/4)/(float)(50));
 					put_pixel32(surface, x, y, hot_cold(val + .5));
 				}
@@ -87,5 +88,13 @@ void demo_do(SDL_Surface *surface, int delta) {
 	if (cnt % (int)(200 / delta) == 0) {
 		velP.initPerlin();
 	}
-	set_spots(spots, SPOT_COUNT, angleOffset+=abs(sin((float)cnt/10)/10), circleRadius += 10*sin((float)cnt/3));
+	if (cnt % (int)(800 / delta) == 0) {
+		spotCount = rand() % SPOTS_MAX;
+		for (int s = 0; s < SPOTS_MAX; s++) {
+			spots[s].x = 0;
+			spots[s].y = 0;
+		}
+		set_spots(spots, spotCount, 0, circleRadius);
+	}
+	set_spots(spots, spotCount, angleOffset+=abs(sin((float)cnt/10)/10), circleRadius += 10*sin((float)cnt/3));
 }
