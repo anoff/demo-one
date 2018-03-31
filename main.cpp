@@ -23,12 +23,13 @@ int main(int argc, char* argv[])
   }
   demo_init();
   screenSurface = SDL_GetWindowSurface(window);
+  int delta = 16;
   bool quit = false;
   while (!quit)
   {
-	  demo_do(screenSurface);
+	  demo_do(screenSurface, delta);
 	  SDL_UpdateWindowSurface(window);
-	  SDL_Delay(16);
+	  SDL_Delay(delta);
 	  SDL_Event event;
 	  if (SDL_PollEvent(&event))
 	  {

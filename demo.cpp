@@ -1,55 +1,10 @@
 #include "demo.h"
 
-// Precomputed (or otherwise) gradient vectors at each grid node
-float Gradient[YRES][XRES][2];
+Perlin p;
 
 void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel) {
 	Uint32 *pixels = reinterpret_cast<uint32_t*>(surface->pixels);
 	pixels[(y * surface->w) + x] = pixel;
-}
-
-// https://en.wikipedia.org/wiki/Perlin_noise#Pseudocode
-// Function to linearly interpolate between a0 and a1
-// Weight w should be in the range [0.0, 1.0]
-float lerp(float a0, float a1, float w) {
-	return (1.0 - w)*a0 + w*a1;
-}
-// Computes the dot product of the distance and gradient vectors.
-float dotGridGradient(int ix, int iy, float x, float y) {
-		// Compute the distance vector
-		float dx = x - (float)ix;
-		float dy = y - (float)iy;
-
-		// Compute the dot-product
-		return (dx*Gradient[iy][ix][0] + dy*Gradient[iy][ix][1]);
-}
-
-// Compute Perlin noise at coordinates x, y
-float perlin(float x, float y) {
-		x = clamp(x, 0, XRES);
-		y = clamp(y, 0, YRES);
-		// Determine grid cell coordinates
-		int x0 = floor(x);
-		int x1 = x0 + 1;
-		int y0 = floor(y);
-		int y1 = y0 + 1;
-
-		// Determine interpolation weights
-		// Could also use higher order polynomial/s-curve here
-		float sx = x - (float)x0;
-		float sy = y - (float)y0;
-
-		// Interpolate between grid point gradients
-		float n0, n1, ix0, ix1, value;
-		n0 = dotGridGradient(x0, y0, x, y);
-		n1 = dotGridGradient(x1, y0, x, y);
-		ix0 = lerp(n0, n1, sx);
-		n0 = dotGridGradient(x0, y1, x, y);
-		n1 = dotGridGradient(x1, y1, x, y);
-		ix1 = lerp(n0, n1, sx);
-		value = lerp(ix0, ix1, sy);
-
-		return value;
 }
 
 float clamp(float val, float low, float high) {
@@ -69,17 +24,7 @@ uint32_t hot_cold(float f) {
 }
 
 void demo_init() {
-	for (int y = 0; y < YRES; y++) {
-		for (int x = 0; x < XRES; x++) {
-			float fx = rand() % 1000 - 500;
-			float fy = rand() % 1000 - 500;
-			float d = sqrt(fx*fx + fy*fy);
-			fx /= d;
-			fy /= d;
-			Gradient[y][x][0] = fx;
-			Gradient[y][x][1] = fy;
-		}
-	}
+	p.initPerlin();
 }
 int cnt = 0;
 void demo_do(SDL_Surface *surface, int delta) {
@@ -87,9 +32,9 @@ void demo_do(SDL_Surface *surface, int delta) {
 	double zoom = sin((float)cnt/10);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			float p = perlin((x + XRES/4 + zoom*ASPECT)/(float)(123 + zoom*30), (y + YRES/4 + zoom)/(float)(231 + zoom*30));
-			p += zoom;
-			put_pixel32(surface, x, y, hot_cold(p + .5));
+			float val = p.getPerlin((x + XRES/4 + zoom*ASPECT)/(float)(123 + zoom*30), (y + YRES/4 + zoom)/(float)(231 + zoom*30));
+			val += zoom;
+			put_pixel32(surface, x, y, hot_cold(val + .5));
 		}
 	}
 }
