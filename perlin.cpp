@@ -1,3 +1,5 @@
+#include "main.h"
+#include "commons.h"
 #include "perlin.h"
 
 // https://en.wikipedia.org/wiki/Perlin_noise#Pseudocode
@@ -66,4 +68,20 @@ float Perlin::getPerlin(float x, float y) {
       return 1;
     }*/
     return value;
+}
+
+// add the gradients of p2 to p1 using a factor (p1 += factor * p2)
+// 	the factor determines how fast p1 converges against p2
+void addPerlinGradient(Perlin &p1, Perlin &p2, float factor) {
+	for (int y = 0; y < YRES; y++) {
+		for (int x = 0; x < XRES; x++) {
+			float v0 = p1.Gradient[y][x][0] + factor * p2.Gradient[y][x][0];
+			float v1 = p1.Gradient[y][x][1] + factor * p2.Gradient[y][x][1];
+			float d = sqrt(v0*v0 + v1*v1);
+			if (d > 0) {
+				p1.Gradient[y][x][0] = v0/d;
+				p1.Gradient[y][x][1] = v1/d;
+			}
+		}
+	}
 }

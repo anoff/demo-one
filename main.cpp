@@ -1,13 +1,17 @@
 #include <iostream>
-#include "demo.h"
+#include "main.h"
+#include "scene_perlin.h"
 
 bool quit = false;
 int deltaT = 16;
 SDL_Window* window = NULL;
 SDL_Surface* screenSurface = NULL;
 
+void init() {
+  scene_perlin_init();
+}
 void loop() {
-  demo_do(screenSurface, deltaT);
+  scene_perlin_do(screenSurface, deltaT);
   SDL_UpdateWindowSurface(window);
   SDL_Delay(deltaT);
   SDL_Event event;
@@ -22,23 +26,21 @@ void loop() {
 
 int main(int argc, char* argv[])
 {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0)
-  {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cerr << "could not create window: " << SDL_GetError() << "\n";
     return 1;
   }
   window = SDL_CreateWindow(
-			    "hello_sdl2",
+			    "Hello Worlds <3",
 			    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			    XRES, YRES,
 			    SDL_WINDOW_SHOWN
 			    );
-  if (window == NULL)
-  {
+  if (window == NULL) {
     std::cerr << "could not create window: " << SDL_GetError() << "\n";
     return 1;
   }
-  demo_init();
+  init();
   screenSurface = SDL_GetWindowSurface(window);
   #ifdef __EMSCRIPTEN__
     // 0 fps means to use requestAnimationFrame; non-0 means to use setTimeout.

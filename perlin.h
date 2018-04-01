@@ -1,7 +1,6 @@
 #ifndef PERLIN_H
 #define PERLIN_H
 
-#include "demo.h"
 #include <cmath>
 #include <cstdlib>
 
@@ -14,4 +13,5 @@ class Perlin {
   float getPerlin(float x, float y);
   float dotGridGradient(int ix, int iy, float x, float y);
 };
+void addPerlinGradient(Perlin &p1, Perlin &p2, float factor);
 #endif
