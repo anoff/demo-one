@@ -5,15 +5,16 @@
 #define INF 9999999
 #define MIN_ILLUMINATION 0.2
 
-std::array<sphere,1> spheres;
+std::array<sphere,2> spheres;
 std::array<vec3,1> lights;
-ray camera(vec3(10, 0, 0), vec3(0, 0, 1));
+ray camera;
 
 void scene_sphere_init() {
-	spheres[0].center = vec3(0, 0, 10);
-	spheres[0].radius = 3;
+	camera.origin = vec3(0, 30, 1);
+	camera.dir = camera.origin * -1.f;
+	camera.dir.normalize();
 
-	lights[0] = vec3(10, 10, 0);
+	lights[0] = vec3(0, 0, 0);
 }
 
 bool check_collision(ray r, float& t, vec3& objCenter) {
@@ -56,13 +57,11 @@ float calc_intensity(vec3 point, vec3 normal) {
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
-	//lights[0] = vec3(80*sin(cnt/7.f), 80*cos(cnt/7.f), 40*cos(cnt/23.f));
-	//lights[1] = vec3(80*sin(cnt/33.f) + 1.5, 80*cos(cnt/33.f) + 1.5, 40*sin(cnt/23.f) - 0.4);
+	spheres[0].center = vec3(10*sin(cnt/30.f), 0, 10*cos(cnt/30.f));
+	spheres[0].radius = 3;
 
-	camera.origin = vec3(30*cos(cnt/7.f), 0, 30*sin(cnt/7.f));
-	camera.dir = camera.origin * -1.f;
-	camera.dir.normalize();
-
+	spheres[1].center = vec3(3*sin(cnt/10.f), 0, 3*cos(cnt/10.f));
+	spheres[1].radius = 1;
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
