@@ -17,6 +17,9 @@ struct vec3 {
     y = y0;
     z = z0;
   }
+  float length() {
+    return sqrt(x*x + y*y + z*z);
+  }
   void normalize() {
     float d = sqrt(x*x + y*y + z*z);
     if (d > 0) {

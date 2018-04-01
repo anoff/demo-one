@@ -15,12 +15,20 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 		for (int x = 0; x<surface->w; x++) {
 			ray r = generateViewport(x, y);
 			float t = INF;
+			float tMin = INF;
 			for (int s = 0; s < spheres.size(); s++) {
 				float t1 = spheres[s].intersect(r);
 				if (t1 < 0) continue;
 				t = (t1 < t) ? t1 : t;
+				if (tMin == INF) {
+					vec3 L = spheres[s].center - r.origin;
+					tMin = L.length() - spheres[s].radius;
+				}
 			}
-			put_pixel32(surface, x, y, (t < INF) ? 0xff00ff : 0x0);
+			if (t < INF) {
+				int i = 3;
+			}
+			put_pixel32(surface, x, y, (t < INF) ? change_lightning(0xff00ff, 1.f - (t - tMin)*(t - tMin)) : 0x0);
 		}
 	}
 }
