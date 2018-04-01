@@ -1,5 +1,5 @@
-#ifndef PERLIN_H
-#define PERLIN_H
+#ifndef RAY_H
+#define RAY_H
 
 #include <cmath>
 #include <cstdlib>
