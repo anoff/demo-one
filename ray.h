@@ -20,7 +20,7 @@ struct vec3 {
   float length() {
     return sqrt(x*x + y*y + z*z);
   }
-  void normalize() {
+  vec3 normalize() {
     float d = sqrt(x*x + y*y + z*z);
     if (d > 0) {
       x /= d;
@@ -29,6 +29,7 @@ struct vec3 {
     } else {
       x = y = z = 0;
     }
+    return *this;
   }
   // overload multiplication to change vector length
   vec3 operator*(float mult) {
@@ -45,6 +46,12 @@ struct vec3 {
     res.y = y + v.y;
     res.z = z + v.z;
     return res;
+  }
+  vec3 operator+=(vec3 v) {
+    x = x+v.x;
+    y = y+v.y;
+    z = z+v.z;
+    return *this;
   }
   // substract two vectors
   vec3 operator-(vec3 v) {

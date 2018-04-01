@@ -3,23 +3,29 @@
 #include "commons.h"
 
 #define INF 9999999
+#define MIN_ILLUMINATION 0.2
 
 std::array<sphere,1> spheres;
 std::array<vec3,1> lights;
 void scene_sphere_init() {
 	spheres[0].center = vec3(0, 0, 10.f);
-	spheres[0].radius = 8;
+	spheres[0].radius = 3;
 
-	lights[0] = vec3(50, 50, 0);
+	lights[0] = vec3(10, 0, 0);
 }
 
-bool checkCollision(ray r, float& t) {
+bool check_collision(ray r, float& t, vec3& objCenter) {
 	t = INF;
 	float tMin = INF;
 	for (int s = 0; s < spheres.size(); s++) {
 		float t1 = spheres[s].intersect(r);
 		if (t1 < 0) continue;
-		t = (t1 < t) ? t1 : t;
+		// new shortest distance found
+		if (t1 < t) {
+			t = t1;
+			objCenter = spheres[s].center;
+		}
+		
 	}
 	if (t < INF) {
 		return true;
@@ -27,34 +33,37 @@ bool checkCollision(ray r, float& t) {
 	return false;
 }
 
-float calcIntensity(vec3 point, ray incomingRay) {
+float calc_intensity(vec3 point, vec3 normal) {
 	float lightIntensity = 0.f;
 	vec3 lightSource = lights[0];
-	incomingRay.dir = incomingRay.dir * -1.f;
+	//normal = normal * -1.f;
 	// do this stuff for each light if there are multiple ones
 	vec3 surf2Light = lightSource - point;
 	ray l = ray(point, surf2Light);
 	l.dir.normalize();
 	float t;
-	bool lightSourceHidden = checkCollision(l, t); // check if there is an object intersection on the light ray
+	vec3 center;
+	bool lightSourceHidden = check_collision(l, t, center); // check if there is an object intersection on the light ray
 	lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
 	if (!lightSourceHidden) {
-		float lightAngle = incomingRay.dir.dot(l.dir);
-		float cosine = (lightAngle);
-		lightIntensity = clamp((cosine + 1) / 2, 0, 1);
+		float lightCosine = normal.dot(l.dir);
+		lightIntensity = clamp(lightCosine, 0, 1);
 	}
-	return lightIntensity;
+	return clamp(lightIntensity, MIN_ILLUMINATION, 1);
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
-	for (int y = 300; y<surface->h; y++) {
-		for (int x = 400; x<surface->w; x++) {
+	for (int y = 0; y<surface->h; y++) {
+		for (int x = 0; x<surface->w; x++) {
 			ray r = generateViewport(x, y); // generate a ray from the camera position through the current pixel position
 			float t;
-			bool hasObject = checkCollision(r, t); // check if there are any objects in view
+			vec3 center;
+			bool hasObject = check_collision(r, t, center); // check if there are any objects in view
 			if (hasObject) {
-				vec3 surfacePoint = r.origin + r.dir*(t - 1e-6);
-				float lightIntensity = calcIntensity(surfacePoint, r);
+				vec3 surfacePoint = r.origin + r.dir*t;
+				vec3 normal = (surfacePoint - center).normalize();
+				surfacePoint += normal*1e-3;
+				float lightIntensity = calc_intensity(surfacePoint, normal);
 				uint32_t color = change_lightning(0xff00ff, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
