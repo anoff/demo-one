@@ -67,6 +67,14 @@ struct vec3 {
     res += z*v.z;
     return res;
   }
+
+  vec3 getOrthogonal(vec3 v) {
+    vec3 res;
+    res.x = y*v.z - z*v.y;
+    res.y = z*v.x - x*v.z;
+    res.z = x*v.y - y*v.x;
+    return res;
+  }
 };
 struct ray {
   vec3 origin;
@@ -101,5 +109,5 @@ struct sphere {
   }
 };
 
-ray generateViewport(int xP, int yP);
+ray generateViewport(int xP, int yP, ray camera);
 #endif

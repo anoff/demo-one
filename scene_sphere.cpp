@@ -7,6 +7,8 @@
 
 std::array<sphere,1> spheres;
 std::array<vec3,2> lights;
+ray camera(vec3(0, 0, 0), vec3(0, 0, 1));
+
 void scene_sphere_init() {
 	spheres[0].center = vec3(0, 0, 10.f);
 	spheres[0].radius = 3;
@@ -56,7 +58,7 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 	lights[1] = vec3(80*sin(cnt/33.f) + 1.5, 80*cos(cnt/33.f) + 1.5, 40*sin(cnt/23.f) - 0.4);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			ray r = generateViewport(x, y); // generate a ray from the camera position through the current pixel position
+			ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
 			float t;
 			vec3 center;
 			bool hasObject = check_collision(r, t, center); // check if there are any objects in view
