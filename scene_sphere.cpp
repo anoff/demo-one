@@ -8,9 +8,9 @@ std::array<sphere,1> spheres;
 std::array<vec3,1> lights;
 void scene_sphere_init() {
 	spheres[0].center = vec3(0, 0, 10.f);
-	spheres[0].radius = 3;
+	spheres[0].radius = 8;
 
-	lights[0] = vec3(5, 5, 0);
+	lights[0] = vec3(50, 50, 0);
 }
 
 bool checkCollision(ray r, float& t) {
@@ -28,8 +28,9 @@ bool checkCollision(ray r, float& t) {
 }
 
 float calcIntensity(vec3 point, ray incomingRay) {
-	float lightIntensity = 0;
+	float lightIntensity = 0.f;
 	vec3 lightSource = lights[0];
+	incomingRay.dir = incomingRay.dir * -1.f;
 	// do this stuff for each light if there are multiple ones
 	vec3 surf2Light = lightSource - point;
 	ray l = ray(point, surf2Light);
@@ -39,8 +40,8 @@ float calcIntensity(vec3 point, ray incomingRay) {
 	lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
 	if (!lightSourceHidden) {
 		float lightAngle = incomingRay.dir.dot(l.dir);
-		float cosin = cos(lightAngle);
-		lightIntensity = clamp((cosin + 1) / 2, 0, 1);
+		float cosine = (lightAngle);
+		lightIntensity = clamp((cosine + 1) / 2, 0, 1);
 	}
 	return lightIntensity;
 }
@@ -54,7 +55,7 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 			if (hasObject) {
 				vec3 surfacePoint = r.origin + r.dir*(t - 1e-6);
 				float lightIntensity = calcIntensity(surfacePoint, r);
-				float color = change_lightning(0xff00ff, lightIntensity);
+				uint32_t color = change_lightning(0xff00ff, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
 				put_pixel32(surface, x, y, 0x0);
