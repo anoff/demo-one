@@ -1,17 +1,19 @@
 #include <iostream>
 #include "main.h"
 #include "scene_perlin.h"
+#include "scene_sphere.h"
 
 bool quit = false;
 int deltaT = 16;
+int cnt = 0;
 SDL_Window* window = NULL;
 SDL_Surface* screenSurface = NULL;
 
 void init() {
-  scene_perlin_init();
+  scene_sphere_init();
 }
 void loop() {
-  scene_perlin_do(screenSurface, deltaT);
+  scene_sphere_do(screenSurface, deltaT, cnt);
   SDL_UpdateWindowSurface(window);
   SDL_Delay(deltaT);
   SDL_Event event;
@@ -22,6 +24,7 @@ void loop() {
       quit = true;
     }
   }
+  cnt++;
 }
 
 int main(int argc, char* argv[])

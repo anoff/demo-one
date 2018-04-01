@@ -13,10 +13,8 @@ void scene_perlin_init() {
 	set_spots(spots, spotCount, 0, circleRadius);
 }
 
-int cnt = 0;
 float angleOffset = 0;
-void scene_perlin_do(SDL_Surface *surface, int delta) {
-	cnt++;
+void scene_perlin_do(SDL_Surface *surface, int delta, int cnt) {
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			put_pixel32(surface, x, y, 0x0);

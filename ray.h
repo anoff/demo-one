@@ -67,19 +67,20 @@ struct sphere {
   float radius;
 
   // check for intersection with ray, return distance units or -1.f
-  //  http://kylehalladay.com/blog/tutorial/math/2013/12/24/Ray-Sphere-Intersection.html
+  //  https://en.wikipedia.org/wiki/Ray_tracing_(graphics)#Example
   float intersect(ray r) {
-    float t; // response, # units from ray origin
-    vec3 L = center - r.origin;
+    vec3 L = r.origin - center;
     float tc = L.dot(r.dir);
-    if (tc < 0) return -1.0f;
-    float d = sqrt(tc*tc - L.dot(L)*L.dot(L));
-    if ( d > radius) return -1.0f;
-    float t1c = sqrt(radius*radius - d*d);
-    float t1 = tc - t1c;
-	  float t2 = tc + t1c;
+    if (-tc < 0) return -1.0f;
+    float d = L.dot(L) - radius*radius;
+    if ( d < 0) return -1.0f;
+    float t1c = sqrt(tc*tc - d);
+    float t1 = -tc - t1c;
+	  float t2 = -tc + t1c;
 
     return t1 < t2 ? t1 : t2;
   }
 };
+
+ray generateViewport(int xP, int yP);
 #endif
