@@ -2,7 +2,7 @@
 build:
 	g++ *.cpp -lsdl2 -O3 -o demo.out
 debug:
-	g++ *.cpp -lsdl2 -o demo.out -g
+	g++ *.cpp -lsdl2 -O3 -o demo.out -g
 run:
 	exec ./demo.out
 dockeremcc:

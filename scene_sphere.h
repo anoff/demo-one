@@ -9,6 +9,7 @@
 #include "main.h"
 #include "ray.h"
 #include "commons.h"
+#include "perlin.h"
 
 using std::uint32_t;
 
@@ -20,6 +21,37 @@ struct ball : sphere {
   }
 };
 
+struct uv {
+  float u;
+  float v;
+  uv() {
+    u = 0;
+    v = 0;
+  }
+  uv(float u, float v) {
+    this->u = u;
+    this->v = v;
+  }
+};
+
+struct planet : sphere {
+  Perlin texture;
+  planet() : sphere() {
+    texture.initPerlin();
+  }
+
+  // get UV 
+  uv getUV(vec3 point) {
+    vec3 d = this->center - point;
+    d.normalize();
+    float u = 0.5f + atan2(d.z, d.x) / (2 * M_PI);
+    float v = 0.5f - asin(d.y) / M_PI;
+    return uv(u, v);
+  }
+  float get_texture(float x, float y) {
+    return texture.getPerlin(x, y);
+  }
+};
 struct light : vec3 {
   float intensity;
   light(float x0, float y0, float z0) : vec3(x0, y0, z0) {

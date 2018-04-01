@@ -3,7 +3,7 @@
 #define INF 9999999
 #define MIN_ILLUMINATION 0.2
 
-std::array<ball,3> spheres;
+std::array<ball,1> spheres;
 std::array<light,1> lights;
 ray camera;
 
@@ -15,9 +15,7 @@ void scene_sphere_init() {
 	lights[0] = light(0, 0, 0, 1.f);
 	//lights[1] = light(50, 0, 0, 0.6f);
 
-	spheres[0].color = 0xFF0000;
-	spheres[1].color = 0x0000FF;
-	spheres[2].color = 0x00FF00;
+	spheres[0] = ball();
 }
 
 bool check_collision(ray r, float& t, ball& obj) {
@@ -31,7 +29,6 @@ bool check_collision(ray r, float& t, ball& obj) {
 			t = t1;
 			obj = spheres[s];
 		}
-		
 	}
 	if (t < INF) {
 		return true;
@@ -63,11 +60,6 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 	spheres[0].center = vec3(40*sin(cnt/30.f), 0, 40*cos(cnt/30.f));
 	spheres[0].radius = 3;
 
-	spheres[1].center = vec3(20*sin(cnt/10.f), 0, 20*cos(cnt/10.f));
-	spheres[1].radius = 2;
-
-	spheres[2].center = vec3(10*sin(cnt/3.f), 0, 10*cos(cnt/3.f)) + spheres[0].center;
-	spheres[2].radius = 1;
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
@@ -79,7 +71,13 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				vec3 normal = (surfacePoint - obj.center).normalize();
 				surfacePoint += normal*1e-3;
 				float lightIntensity = calc_intensity(surfacePoint, normal);
-				uint32_t color = change_lightning(obj.color, lightIntensity);
+				/*
+				uv texCoords = obj.getUV(surfacePoint);
+				float colorVal = obj.get_texture(texCoords.u/50, texCoords.v/50);
+				uint32_t color = hot_cold(colorVal + .5);
+				*/
+				uint32_t color = 0xff0000;
+				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
 				put_pixel32(surface, x, y, 0x0);
