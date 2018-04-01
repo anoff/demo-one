@@ -1,15 +1,18 @@
 #include "demo.h"
-#define SPOTS_MAX 10
-#define GLOW_RADIUS 50
+#define SPOTS_MAX 5
+#define GLOW_RADIUS 90
 
-struct spot {
+struct coord {
 	int x;
 	int y;
+};
+struct spot {
+	coord center;
 	int radius;
 } spots[SPOTS_MAX];
 
-float circleRadius = 230;
-int spotCount = 5;
+float circleRadius = 150;
+int spotCount = 4;
 Perlin baseP;
 Perlin velP;
 
@@ -43,18 +46,18 @@ uint32_t change_lightning(uint32_t c, float scale) {
 	b = clamp(b*scale, 0.f, 255.f);
 	return color(static_cast<int>(r), static_cast<int>(g), static_cast<int>(b));
 }
-std::array<float,2> calculateXY(float x0, float y0, float radius, float angle) {
-	float x = x0 + sin(angle)*radius;
-	float y = y0 + cos(angle)*radius;
-	return {x, y};
+coord calculateXY(float x0, float y0, float radius, float angle) {
+	coord response;
+	response.x = x0 + sin(angle)*radius;
+	response.y = y0 + cos(angle)*radius;
+	return response;
 }
 void set_spots(spot* spots, int spotCount, float angleOffset, float circleRadius) {
 	int spotRadius = 100 - clamp(spotCount - 3, 0, 10) * 10;
 
 	for (int i = 0; i < spotCount; i++) {
-		std::array<float,2> pos = calculateXY(XRES/2, YRES/2, circleRadius, i * 2* 3.1415 /spotCount + angleOffset);
-		spots[i].x = pos[0];
-		spots[i].y = pos[1];
+		coord pos = calculateXY(XRES/2, YRES/2, circleRadius, i * 2* 3.1415 /spotCount + angleOffset);
+		spots[i].center = pos;
 		spots[i].radius = spotRadius;
 	}
 }
@@ -65,11 +68,13 @@ void demo_init() {
 	set_spots(spots, spotCount, 0, circleRadius);
 }
 
-void addPerlinGradient(Perlin &p1, Perlin &p2) {
+// add the gradients of p2 to p1 using a factor
+// 	the factor determines how fast p1 converges against p2
+void addPerlinGradient(Perlin &p1, Perlin &p2, float factor) {
 	for (int y = 0; y < YRES; y++) {
 		for (int x = 0; x < XRES; x++) {
-			float v0 = p1.Gradient[y][x][0] + 0.1 * p2.Gradient[y + 13][x + 13][0];
-			float v1 = p1.Gradient[y][x][1] + 0.1 * p2.Gradient[y + 13][x + 13][1];
+			float v0 = p1.Gradient[y][x][0] + factor * p2.Gradient[y][x][0];
+			float v1 = p1.Gradient[y][x][1] + factor * p2.Gradient[y][x][1];
 			float d = sqrt(v0*v0 + v1*v1);
 			if (d > 0) {
 				p1.Gradient[y][x][0] = v0/d;
@@ -88,8 +93,8 @@ void demo_do(SDL_Surface *surface, int delta) {
 			put_pixel32(surface, x, y, 0x0);
 			float lightning = 0;
 			for (int s = 0; s < spotCount; s++) {
-				int radius = sqrt(pow(abs(x - spots[s].x), 2) + pow(abs(y - spots[s].y), 2));
-				if (spots[s].x == 0 && spots[s].y == 0) lightning = lightning > 0 ? lightning : 0;
+				int radius = sqrt(pow(abs(x - spots[s].center.x), 2) + pow(abs(y - spots[s].center.y), 2));
+				if (spots[s].center.x == 0 && spots[s].center.y == 0) lightning = lightning > 0 ? lightning : 0;
 				else if (radius < spots[s].radius) {
 					lightning = 1;
 				} else if (radius < spots[s].radius + GLOW_RADIUS) {
@@ -105,15 +110,15 @@ void demo_do(SDL_Surface *surface, int delta) {
 			}
 		}
 	}
-	addPerlinGradient(baseP, velP);
+	addPerlinGradient(baseP, velP, 0.1);
 	if (cnt % (int)(200 / delta) == 0) {
 		velP.initPerlin();
 	}
 	if (cnt % (int)(500 / delta) == 0) {
 		spotCount = rand() % SPOTS_MAX + 1;
 		for (int s = 0; s < SPOTS_MAX; s++) {
-			spots[s].x = 0;
-			spots[s].y = 0;
+			spots[s].center.x = 0;
+			spots[s].center.y = 0;
 		}
 		set_spots(spots, spotCount, angleOffset, circleRadius);
 	}
