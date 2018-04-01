@@ -11,6 +11,6 @@ ray generateViewport(int xP, int yP, ray camera) {
   float y = (float)(2*yP - YRES)/YRES;
   res.dir = p*x + up*y + camera.dir;
   res.dir.normalize();
-  res.origin = vec3(0.f, 0.f, 0.f);
+  res.origin = camera.origin;
   return res;
 }
