@@ -36,10 +36,10 @@ struct uv {
 
 struct planet : sphere {
   Perlin texture;
-  planet() : sphere() {
+  planet init() {
     texture.initPerlin();
+    return *this;
   }
-
   // get UV 
   uv getUV(vec3 point) {
     vec3 d = this->center - point;
