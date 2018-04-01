@@ -6,12 +6,10 @@
 #define MIN_ILLUMINATION 0.2
 
 std::array<sphere,1> spheres;
-std::array<vec3,1> lights;
+std::array<vec3,2> lights;
 void scene_sphere_init() {
 	spheres[0].center = vec3(0, 0, 10.f);
 	spheres[0].radius = 3;
-
-	lights[0] = vec3(10, 0, 0);
 }
 
 bool check_collision(ray r, float& t, vec3& objCenter) {
@@ -35,24 +33,27 @@ bool check_collision(ray r, float& t, vec3& objCenter) {
 
 float calc_intensity(vec3 point, vec3 normal) {
 	float lightIntensity = 0.f;
-	vec3 lightSource = lights[0];
-	//normal = normal * -1.f;
-	// do this stuff for each light if there are multiple ones
-	vec3 surf2Light = lightSource - point;
-	ray l = ray(point, surf2Light);
-	l.dir.normalize();
-	float t;
-	vec3 center;
-	bool lightSourceHidden = check_collision(l, t, center); // check if there is an object intersection on the light ray
-	lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
-	if (!lightSourceHidden) {
-		float lightCosine = normal.dot(l.dir);
-		lightIntensity = clamp(lightCosine, 0, 1);
+	for (int lix = 0; lix < lights.size(); lix++) {
+		vec3 lightSource = lights[lix];
+		// do this stuff for each light if there are multiple ones
+		vec3 surf2Light = lightSource - point;
+		ray l = ray(point, surf2Light);
+		l.dir.normalize();
+		float t;
+		vec3 center;
+		bool lightSourceHidden = check_collision(l, t, center); // check if there is an object intersection on the light ray
+		lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
+		if (!lightSourceHidden) {
+			float lightCosine = normal.dot(l.dir);
+			lightIntensity = lightCosine > lightIntensity ? clamp(lightCosine, 0, 1) : lightIntensity;
+		}
 	}
 	return clamp(lightIntensity, MIN_ILLUMINATION, 1);
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
+	lights[0] = vec3(80*sin(cnt/7.f), 80*cos(cnt/7.f), 40*cos(cnt/23.f));
+	lights[1] = vec3(80*sin(cnt/33.f) + 1.5, 80*cos(cnt/33.f) + 1.5, 40*sin(cnt/23.f) - 0.4);
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			ray r = generateViewport(x, y); // generate a ray from the camera position through the current pixel position
