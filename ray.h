@@ -64,6 +64,15 @@ struct vec3 {
 struct ray {
   vec3 origin;
   vec3 dir;
+
+  ray(vec3 o, vec3 d) {
+    origin = o;
+    dir = d;
+  }
+  ray() {
+    origin = vec3(0, 0, 0);
+    dir = vec3(0, 0, 0);
+  }
 };
 struct sphere {
   vec3 center;
