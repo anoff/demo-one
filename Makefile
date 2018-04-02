@@ -1,8 +1,8 @@
 .PHONY: emcc serve autobuild
 build:
-	g++ *.cpp -lsdl2 -O3 -o demo.out
+	g++ *.cpp -lsdl2 -O2 -o demo.out -std=c++11
 debug:
-	g++ *.cpp -lsdl2 -O3 -o demo.out -g
+	g++ *.cpp -lsdl2 -o demo.out -g -std=c++11
 run:
 	exec ./demo.out
 dockeremcc:
