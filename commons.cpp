@@ -13,12 +13,31 @@ float clamp(float val, float low, float high) {
 uint32_t color(const int r, const int g, const int b) {
 	return 0xff000000 | (r << 16) | (g << 8) | b;
 }
-uint32_t hot_cold(float f) {
+uint32_t cm_grayscale(float f) {
+	f = clamp(f, 0.f, 1.f);
+	f = 2*f*f;
+	f = clamp(f, 0.f, 1.f);
+	return color(static_cast<int>(255.f * f), static_cast<int>(255.f * f), static_cast<int>(255.f * f));
+}
+uint32_t cm_hot_cold(float f) {
 	clamp(f, 0.f, 1.f);
 	f = (2.f * f) - 1.f;
 	float r = clamp(1.5f - abs(2.f * f - 1.f), 0.f, 1.f);
 	float g = clamp(1.5f - abs(2.f * f), 0.f, 1.f);
 	float b = clamp(1.5f - abs(2.f * f + 1.f), 0.f, 1.f);
+	return color(static_cast<int>(255.f * r), static_cast<int>(255.f * g), static_cast<int>(255.f * b));
+}
+uint32_t cm_terrain(float f) {
+	clamp(f, 0.f, 1.f);
+	// 0 = 		(0, 	0, 	255)
+	// 0.5 =  (255, 255, 0)
+	// 1 = 		(255, 255, 255)
+	float r = f * 2;
+	float g = abs(f - 0.5);
+	float b = f * 2;
+	r = clamp(r, 0.f, 1.f);
+	g = clamp(g, 0.f, 1.f);
+	b = clamp(b, 0.f, 1.f);
 	return color(static_cast<int>(255.f * r), static_cast<int>(255.f * g), static_cast<int>(255.f * b));
 }
 uint32_t change_lightning(uint32_t c, float scale) {

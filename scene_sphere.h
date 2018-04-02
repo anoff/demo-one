@@ -9,7 +9,7 @@
 #include "main.h"
 #include "ray.h"
 #include "commons.h"
-#include "perlin.h"
+#include "simplex_noise.h"
 
 using std::uint32_t;
 
@@ -32,7 +32,7 @@ struct ball : sphere {
 };
 
 struct planet : sphere {
-  Perlin* texture = nullptr;
+  SimplexNoise* texture = nullptr;
   ~planet() {
    if (texture != nullptr) {
      delete texture;
@@ -40,11 +40,10 @@ struct planet : sphere {
    }
   }
   void init() {
-    texture = new Perlin();
-    texture->initPerlin();
+    texture = new SimplexNoise();
   }
-  float getTex(float u, float v) {
-    return texture->getPerlin(u/30, v/30); 
+  float getTex(float x, float y, float z) {
+    return texture->noise(x, y, z); 
   }
   // get UV 
   uv getUV(vec3 point) {

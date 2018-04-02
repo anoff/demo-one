@@ -57,7 +57,7 @@ float calc_intensity(vec3 point, vec3 normal) {
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
-	spheres[0].center = vec3(40*sin(cnt/30.f), 0, 40*cos(cnt/30.f));
+	spheres[0].center = vec3(40*sin(cnt/300.f), 0, 40*cos(cnt/300.f));
 	spheres[0].radius = 10;
 
 	for (int y = 0; y<surface->h; y++) {
@@ -71,10 +71,10 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				vec3 normal = (surfacePoint - obj->center).normalize();
 				surfacePoint += normal*1e-3;
 				float lightIntensity = calc_intensity(surfacePoint, normal);
-				uv texCoords = obj->getUV(surfacePoint);
-				float colorVal = obj->getTex(texCoords.u*200, texCoords.v*200);
+				vec3 texCoords = surfacePoint - obj->center;
+				float colorVal = obj->getTex(texCoords.x, texCoords.y, texCoords.z);
 				//float colorVal = 0.4;
-				uint32_t color = hot_cold(colorVal + .5);
+				uint32_t color = cm_grayscale(colorVal);
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {

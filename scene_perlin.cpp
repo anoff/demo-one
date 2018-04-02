@@ -30,7 +30,7 @@ void scene_perlin_do(SDL_Surface *surface, int delta, int cnt) {
 				}
 				if (lightning > 0) {
 					float val = baseP.getPerlin((x + XRES/4)/(float)(50), (y + YRES/4)/(float)(50));
-					put_pixel32(surface, x, y, change_lightning(hot_cold(val + .5), lightning));
+					put_pixel32(surface, x, y, change_lightning(cm_hot_cold(val + .5), lightning));
 				} else {
 					put_pixel32(surface, x, y, 0x00);
 				}
