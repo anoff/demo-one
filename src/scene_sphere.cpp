@@ -85,7 +85,7 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				float lightIntensity = calc_intensity(surfacePoint, normal);
 				vec3 texCoords = (surfacePoint - obj->center).normalize();
 				float colorVal = obj->getTex(texCoords.x, texCoords.y, texCoords.z);
-				uint32_t color = cm_hot_cold(colorVal/8 + 0.8);
+				uint32_t color = cm_terrain(colorVal/2 + 0.5);
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {

@@ -29,12 +29,38 @@ uint32_t cm_hot_cold(float f) {
 }
 uint32_t cm_terrain(float f) {
 	clamp(f, 0.f, 1.f);
-	// 0 = 		(0, 	0, 	255)
-	// 0.5 =  (255, 255, 0)
-	// 1 = 		(255, 255, 255)
-	float r = f * 2;
-	float g = abs(f - 0.5);
-	float b = f * 2;
+	// color scale: blue -> green -> white
+	//
+	// stop 		r 			g				b
+	// 0.0			0				0				0.3
+	// 0.13			0 			0				1.0
+	// 0.5			0				0.5			0
+	// 0.85			0.75		0.75		0.75
+	// 1.0 			1				1				1
+	// set according to sections
+	float r, g, b;
+	if (f > 0.85f) {
+		// 0..1 how finished this section is (color = t*gradient + offset)
+		float t = clamp(f - 0.85f, 0, 1)/0.15f;
+		r = 0.25f*t + 0.75f;
+		g = 0.25f*t + 0.75f;
+		b = 0.25f*t + 0.75f;
+	} else if (f > 0.5f) {
+		float t = clamp(f - 0.5f, 0, 1)/0.35f;
+		r = 0.75f*t;
+		g = 0.25f*t + 0.5f;
+		b = 0.75f*t;
+	} else if (f > 0.13f) {
+		float t = clamp(f - 0.13f, 0, 1)/0.37f;
+		r = 0;
+		g = 0.5f*t;
+		b = -t + 1.f;
+	} else { // f > 0
+		float t = f/0.13f;
+		r = 0;
+		g = 0;
+		b = 0.7f*t + 0.3f;
+	}
 	r = clamp(r, 0.f, 1.f);
 	g = clamp(g, 0.f, 1.f);
 	b = clamp(b, 0.f, 1.f);
