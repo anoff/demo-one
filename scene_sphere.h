@@ -13,13 +13,7 @@
 
 using std::uint32_t;
 
-struct ball : sphere {
-  uint32_t color;
-
-  ball() : sphere() {
-    color = 0xFAFAFA;
-  }
-};
+#define PERL_TEX_SIZE 1000
 
 struct uv {
   float u;
@@ -28,28 +22,40 @@ struct uv {
     u = 0;
     v = 0;
   }
-  uv(float u, float v) {
-    this->u = u;
-    this->v = v;
+};
+struct ball : sphere {
+  uint32_t color;
+
+  ball() : sphere() {
+    color = 0xFAFAFA;
   }
 };
 
 struct planet : sphere {
-  Perlin texture;
-  planet init() {
-    texture.initPerlin();
-    return *this;
+  Perlin* texture = nullptr;
+  ~planet() {
+   if (texture != nullptr) {
+     delete texture;
+     texture = nullptr; 
+   }
+  }
+  void init() {
+    texture = new Perlin();
+    texture->initPerlin();
+  }
+  float getTex(float u, float v) {
+    return texture->getPerlin(u/30, v/30); 
   }
   // get UV 
   uv getUV(vec3 point) {
+    uv res;
     vec3 d = this->center - point;
     d.normalize();
     float u = 0.5f + atan2(d.z, d.x) / (2 * M_PI);
     float v = 0.5f - asin(d.y) / M_PI;
-    return uv(u, v);
-  }
-  float get_texture(float x, float y) {
-    return texture.getPerlin(x, y);
+    res.u = u;
+    res.v = v;
+    return res;
   }
 };
 struct light : vec3 {

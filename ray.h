@@ -96,14 +96,14 @@ struct sphere {
   // check for intersection with ray, return distance units or -1.f
   //  https://en.wikipedia.org/wiki/Ray_tracing_(graphics)#Example
   float intersect(ray r) {
-    vec3 L = r.origin - center;
-    float tc = L.dot(r.dir);
-    if (-tc < 0) return -1.0f;
-    float d = L.dot(L) - radius*radius;
+    vec3 V = r.origin - center;
+    float vd = V.dot(r.dir);
+    if (vd > 0) return -1.0f;
+    float d = V.dot(V) - radius*radius;
     if ( d < 0) return -1.0f;
-    float t1c = sqrt(tc*tc - d);
-    float t1 = -tc - t1c;
-	  float t2 = -tc + t1c;
+    float t1c = sqrt(vd*vd - d);
+    float t1 = -vd - t1c;
+	  float t2 = -vd + t1c;
 
     return t1 < t2 ? t1 : t2;
   }
