@@ -1,9 +1,9 @@
 #include "scene_sphere.h"
 
 #define INF 9999999
-#define MIN_ILLUMINATION 0.2
+#define MIN_ILLUMINATION 0.1f
 
-std::array<planet,1> spheres;
+std::array<planet,5> spheres;
 std::array<light,2> lights;
 ray camera;
 
@@ -16,6 +16,15 @@ void scene_sphere_init() {
 	lights[1] = light(camera.origin);
 
 	spheres[0].init();
+	spheres[0].radius = 10;
+	spheres[1].init();
+	spheres[1].radius = 2;
+	spheres[2].init();
+	spheres[2].radius = 3;
+	spheres[3].init();
+	spheres[3].radius = 1;
+	spheres[4].init();
+	spheres[4].radius = 1;
 }
 
 bool check_collision(ray r, float& t, planet** obj) {
@@ -57,8 +66,11 @@ float calc_intensity(vec3 point, vec3 normal) {
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
-	spheres[0].center = vec3(40*sin(cnt/100.f), 0, 40*cos(cnt/100.f));
-	spheres[0].radius = 30;
+	spheres[0].center = vec3(60*sin(cnt/73.f), 0, 40*cos(cnt/73.f));
+	spheres[1].center = vec3(20*sin(cnt/13.f), 0, 20*cos(cnt/13.f)) + spheres[0].center;
+	spheres[2].center = vec3(9*sin(cnt/33.f), 0, -9*cos(cnt/33.f));
+	spheres[3].center = vec3(4*sin(cnt/8.f), 0, 4*cos(cnt/8.f)) + spheres[2].center;
+	spheres[4].center = vec3(4*sin(cnt/8.f + M_PI/2.f), 0, 4*cos(cnt/8.f + M_PI/2.f)) + spheres[2].center;
 
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
@@ -71,9 +83,9 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				vec3 normal = (surfacePoint - obj->center).normalize();
 				surfacePoint += normal*1e-3;
 				float lightIntensity = calc_intensity(surfacePoint, normal);
-				vec3 texCoords = (surfacePoint - obj->center).normalize() * 2;
+				vec3 texCoords = (surfacePoint - obj->center).normalize();
 				float colorVal = obj->getTex(texCoords.x, texCoords.y, texCoords.z);
-				uint32_t color = cm_grayscale(colorVal/2 + 0.5);
+				uint32_t color = cm_hot_cold(colorVal/8 + 0.8);
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
