@@ -1,11 +1,12 @@
 #include "scene_sphere.h"
 
 #define INF 9999999
-#define MIN_ILLUMINATION 0.1f
+#define MIN_ILLUMINATION 0.2f
 
 std::array<planet,5> spheres;
-std::array<light,2> lights;
+std::array<light,1> lights;
 ray camera;
+SimplexNoise background;
 
 void scene_sphere_init() {
 	camera.origin = vec3(0, 60, 0.1f);
@@ -13,7 +14,7 @@ void scene_sphere_init() {
 	camera.dir.normalize();
 
 	lights[0] = light(0, 0, 0, 1.f);
-	lights[1] = light(camera.origin);
+	//lights[1] = light(camera.origin);
 
 	spheres[0].init();
 	spheres[0].radius = 10;
@@ -89,7 +90,13 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
-				put_pixel32(surface, x, y, 0x0);
+				// add "stars" in background
+				float value = background.noise(x/30.f, y/30.f)/2 + 0.5f; // normalize 0..1
+				if (value > 0.9999f) {
+					put_pixel32(surface, x, y, 0xffffff);
+				} else {
+					put_pixel32(surface, x, y, 0x0);
+				}
 			}
 		}
 	}
