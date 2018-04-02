@@ -4,7 +4,7 @@
 #define MIN_ILLUMINATION 0.2
 
 std::array<planet,1> spheres;
-std::array<light,1> lights;
+std::array<light,2> lights;
 ray camera;
 
 void scene_sphere_init() {
@@ -13,7 +13,7 @@ void scene_sphere_init() {
 	camera.dir.normalize();
 
 	lights[0] = light(0, 0, 0, 1.f);
-	//lights[1] = light(50, 0, 0, 0.6f);
+	lights[1] = light(camera.origin);
 
 	spheres[0].init();
 }
@@ -57,8 +57,8 @@ float calc_intensity(vec3 point, vec3 normal) {
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
-	spheres[0].center = vec3(40*sin(cnt/300.f), 0, 40*cos(cnt/300.f));
-	spheres[0].radius = 10;
+	spheres[0].center = vec3(40*sin(cnt/100.f), 0, 40*cos(cnt/100.f));
+	spheres[0].radius = 30;
 
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
@@ -71,10 +71,9 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				vec3 normal = (surfacePoint - obj->center).normalize();
 				surfacePoint += normal*1e-3;
 				float lightIntensity = calc_intensity(surfacePoint, normal);
-				vec3 texCoords = surfacePoint - obj->center;
+				vec3 texCoords = (surfacePoint - obj->center).normalize() * 2;
 				float colorVal = obj->getTex(texCoords.x, texCoords.y, texCoords.z);
-				//float colorVal = 0.4;
-				uint32_t color = cm_grayscale(colorVal);
+				uint32_t color = cm_grayscale(colorVal/2 + 0.5);
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {

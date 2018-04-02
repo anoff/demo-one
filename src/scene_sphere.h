@@ -40,7 +40,7 @@ struct planet : sphere {
    }
   }
   void init() {
-    texture = new SimplexNoise();
+      texture = new SimplexNoise();
   }
   float getTex(float x, float y, float z) {
     return texture->noise(x, y, z); 
@@ -59,6 +59,9 @@ struct planet : sphere {
 };
 struct light : vec3 {
   float intensity;
+  light(vec3 pos) : vec3(pos) {
+    intensity = 1.f;
+  }
   light(float x0, float y0, float z0) : vec3(x0, y0, z0) {
     intensity = 1.f;
   }
