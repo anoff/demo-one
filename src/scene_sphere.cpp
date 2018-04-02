@@ -91,9 +91,6 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 			} else {
 				put_pixel32(surface, x, y, 0x0);
 			}
-			if (x == XRES/2 || y == YRES/2) {
-				put_pixel32(surface, x, y, 0xFFFFFF);
-			}
 		}
 	}
 }
