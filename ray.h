@@ -101,6 +101,7 @@ struct sphere {
     if (vd > 0) return -1.0f;
     float d = V.dot(V) - radius*radius;
     if ( d < 0) return -1.0f;
+    if (vd*vd < d) return -1.0f;
     float t1c = sqrt(vd*vd - d);
     float t1 = -vd - t1c;
 	  float t2 = -vd + t1c;
