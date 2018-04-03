@@ -33,6 +33,8 @@ struct ball : sphere {
 
 struct planet : sphere {
   SimplexNoise* texture = nullptr;
+  enum ColorMap { grayscale, hotcold, terrain, moon };
+  ColorMap cm = ColorMap::moon;
   ~planet() {
    if (texture != nullptr) {
      delete texture;
@@ -45,8 +47,17 @@ struct planet : sphere {
   float getTex(float x, float y, float z) {
     return texture->noise(x, y, z); 
   }
-  // get UV 
-  uv getUV(vec3 point) {
+  uint32_t colorMap(float f) {
+    switch (cm) {
+      case grayscale: return cm_grayscale(f);
+      case terrain: return cm_terrain(f);
+      case hotcold: return cm_hot_cold(f);
+      case moon: return cm_grayscale(2*f);
+      default: return cm_grayscale(f);
+    }
+  }
+  // get UV coordinates
+  uv getPolar(vec3 point) {
     uv res;
     vec3 d = this->center - point;
     d.normalize();

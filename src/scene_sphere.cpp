@@ -16,15 +16,13 @@ void scene_sphere_init() {
 	lights[0] = light(0, 0, 0, 1.f);
 	//lights[1] = light(camera.origin);
 
-	spheres[0].init();
+	for (int i = 0; i < spheres.size(); i++) spheres[i].init();
 	spheres[0].radius = 10;
-	spheres[1].init();
+	spheres[0].cm = planet::ColorMap::terrain;
 	spheres[1].radius = 2;
-	spheres[2].init();
 	spheres[2].radius = 3;
-	spheres[3].init();
+	spheres[2].cm = planet::ColorMap::terrain;
 	spheres[3].radius = 1;
-	spheres[4].init();
 	spheres[4].radius = 1;
 }
 
@@ -86,7 +84,7 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				float lightIntensity = calc_intensity(surfacePoint, normal);
 				vec3 texCoords = (surfacePoint - obj->center).normalize();
 				float colorVal = obj->getTex(texCoords.x, texCoords.y, texCoords.z);
-				uint32_t color = cm_terrain(colorVal/2 + 0.5);
+				uint32_t color = obj->colorMap(colorVal/2 + 0.5);
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
