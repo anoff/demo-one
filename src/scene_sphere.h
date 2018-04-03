@@ -5,6 +5,7 @@
 #include <array>
 #include <cstdlib>
 #include <cmath>
+#include <vector>
 
 #include "main.h"
 #include "ray.h"
@@ -23,29 +24,22 @@ struct uv {
     v = 0;
   }
 };
-struct ball : sphere {
+struct Ball : sphere {
   uint32_t color;
+  float intensity = 0.f; // light intensity
 
-  ball() : sphere() {
+  Ball() : sphere() {
     color = 0xFAFAFA;
   }
 };
 
-struct planet : sphere {
-  SimplexNoise* texture = nullptr;
+struct Planet : sphere {
+  SimplexNoise texture;
   enum ColorMap { grayscale, hotcold, terrain, moon };
   ColorMap cm = ColorMap::moon;
-  ~planet() {
-   if (texture != nullptr) {
-     delete texture;
-     texture = nullptr; 
-   }
-  }
-  void init() {
-      texture = new SimplexNoise();
-  }
+
   float getTex(float x, float y, float z) {
-    return texture->noise(x, y, z); 
+    return texture.noise(x, y, z); 
   }
   uint32_t colorMap(float f) {
     switch (cm) {

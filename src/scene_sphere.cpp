@@ -3,7 +3,8 @@
 #define INF 9999999
 #define MIN_ILLUMINATION 0.2f
 
-std::array<planet,5> spheres;
+std::vector<Planet> planets;
+std::array<Ball,1> balls;
 std::array<light,1> lights;
 ray camera;
 SimplexNoise background;
@@ -13,29 +14,53 @@ void scene_sphere_init() {
 	camera.dir = camera.origin * -1.f;
 	camera.dir.normalize();
 
-	lights[0] = light(0, 0, 0, 1.f);
+	lights[0] = light(0, 10, 0, 0);
 	//lights[1] = light(camera.origin);
 
-	for (int i = 0; i < spheres.size(); i++) spheres[i].init();
-	spheres[0].radius = 10;
-	spheres[0].cm = planet::ColorMap::terrain;
-	spheres[1].radius = 2;
-	spheres[2].radius = 3;
-	spheres[2].cm = planet::ColorMap::terrain;
-	spheres[3].radius = 1;
-	spheres[4].radius = 1;
+	balls[0].center = vec3(0, 0, 0);
+	balls[0].intensity = 0.1f;
+	balls[0].radius = 5;
+	balls[0].color = 0xFFFF00;
+
+	for (int i = 0; i < 5; i++) {
+		Planet p;
+		planets.push_back(p);
+	}
+	planets[0].radius = 10;
+	planets[0].cm = Planet::ColorMap::terrain;
+	planets[1].radius = 2;
+	planets[2].radius = 3;
+	planets[2].cm = Planet::ColorMap::terrain;
+	planets[3].radius = 1;
+	planets[4].radius = 1;
+
+	// add stars
+	for (float u = 0; u < M_PI*2; u=u+0.3f) {
+		for (float v = 0; v < M_PI*2; v=v+0.3f) {
+			ray r;
+			r.dir = vec3(sin(u)*cos(v), sin(u)*sin(v), cos(u));
+			vec3 starPos = r.origin + r.dir*1000;
+			float f = background.noise(starPos.x, starPos.y, starPos.z)/2 + 0.5;
+			if (f > 0.8f) {
+				Planet s;
+				s.radius = 5;
+				s.center = starPos;
+				planets.push_back(s);
+			}
+		}
+	}
 }
 
-bool check_collision(ray r, float& t, planet** obj) {
+bool check_collision(ray r, float& t, Planet** obj) {
 	t = INF;
 	float tMin = INF;
-	for (int s = 0; s < spheres.size(); s++) {
-		float t1 = spheres[s].intersect(r);
+	for (int s = 0; s < planets.size(); s++) {
+		float t1 = planets[s].intersect(r);
 		if (t1 < 0) continue;
 		// new shortest distance found
 		if (t1 < t) {
 			t = t1;
-			 *obj = &spheres[s];
+			 *obj = &planets[s];
 		}
 	}
 	if (t < INF) {
@@ -53,7 +78,7 @@ float calc_intensity(vec3 point, vec3 normal) {
 		ray l = ray(point, surf2Light);
 		l.dir.normalize();
 		float t;
-		planet* obj = nullptr;
+		Planet* obj = nullptr;
 		bool lightSourceHidden = check_collision(l, t, &obj); // check if there is an object intersection on the light ray
 		lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
 		if (!lightSourceHidden) {
@@ -65,17 +90,18 @@ float calc_intensity(vec3 point, vec3 normal) {
 }
 
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
-	spheres[0].center = vec3(60*sin(cnt/73.f), 0, 40*cos(cnt/73.f));
-	spheres[1].center = vec3(20*sin(cnt/13.f), 0, 20*cos(cnt/13.f)) + spheres[0].center;
-	spheres[2].center = vec3(9*sin(cnt/33.f), 0, -9*cos(cnt/33.f));
-	spheres[3].center = vec3(4*sin(cnt/8.f), 0, 4*cos(cnt/8.f)) + spheres[2].center;
-	spheres[4].center = vec3(4*sin(cnt/8.f + M_PI/2.f), 0, 4*cos(cnt/8.f + M_PI/2.f)) + spheres[2].center;
+	planets[0].center = vec3(60*sin(cnt/73.f), 0, 40*cos(cnt/73.f));
+	planets[1].center = vec3(20*sin(cnt/13.f), 0, 20*cos(cnt/13.f)) + planets[0].center;
+	planets[2].center = vec3(9*sin(cnt/33.f), 0, -9*cos(cnt/33.f));
+	planets[3].center = vec3(4*sin(cnt/8.f), 0, 4*cos(cnt/8.f)) + planets[2].center;
+	planets[4].center = vec3(4*sin(cnt/8.f + M_PI/2.f), 0, 4*cos(cnt/8.f + M_PI/2.f)) + planets[2].center;
 
+	//camera.dir = (planets[0].center - camera.origin).normalize();
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
 			float t;
-			planet* obj = nullptr;
+			Planet* obj = nullptr;
 			bool hasObject = check_collision(r, t, &obj); // check if there are any objects in view
 			if (hasObject) {
 				vec3 surfacePoint = r.origin + r.dir*t;
@@ -88,13 +114,7 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
-				// add "stars" in background
-				float value = background.noise(x/30.f, y/30.f)/2 + 0.5f; // normalize 0..1
-				if (value > 0.9999f) {
-					put_pixel32(surface, x, y, 0xffffff);
-				} else {
 					put_pixel32(surface, x, y, 0x0);
-				}
 			}
 		}
 	}
