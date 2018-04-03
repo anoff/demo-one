@@ -1,8 +1,8 @@
 #include "ray.h"
 #include "main.h"
 
-ray generateViewport(int xP, int yP, ray camera) {
-  ray res;
+Ray generateViewport(int xP, int yP, Ray camera) {
+  Ray res;
   vec3 up(0, -1, 0);
   vec3 p = camera.dir.getOrthogonal(up);
   p.normalize();

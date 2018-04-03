@@ -76,26 +76,32 @@ struct vec3 {
     return res;
   }
 };
-struct ray {
+struct Ray {
   vec3 origin;
   vec3 dir;
 
-  ray(vec3 o, vec3 d) {
+  Ray(vec3 o, vec3 d) {
     origin = o;
     dir = d;
   }
-  ray() {
+  Ray() {
     origin = vec3(0, 0, 0);
     dir = vec3(0, 0, 0);
   }
 };
-struct sphere {
+
+struct Object {
   vec3 center;
+  uint32_t get_color(float x, float y, float z);
+  float intersect(Ray r);
+};
+
+struct Sphere : Object {
   float radius;
 
   // check for intersection with ray, return distance units or -1.f
   //  https://en.wikipedia.org/wiki/Ray_tracing_(graphics)#Example
-  float intersect(ray r) {
+  float intersect(Ray r) {
     vec3 V = r.origin - center;
     float vd = V.dot(r.dir);
     if (vd > 0) return -1.0f;
@@ -110,5 +116,5 @@ struct sphere {
   }
 };
 
-ray generateViewport(int xP, int yP, ray camera);
+Ray generateViewport(int xP, int yP, Ray camera);
 #endif

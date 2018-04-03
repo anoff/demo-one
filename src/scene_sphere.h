@@ -24,22 +24,29 @@ struct uv {
     v = 0;
   }
 };
-struct Ball : sphere {
+struct Ball : Sphere {
   uint32_t color;
   float intensity = 0.f; // light intensity
 
-  Ball() : sphere() {
+  Ball() : Sphere() {
     color = 0xFAFAFA;
+  }
+  uint32_t get_color(float x, float y, float z) {
+    return color;
   }
 };
 
-struct Planet : sphere {
+struct Planet : Sphere {
   SimplexNoise texture;
   enum ColorMap { grayscale, hotcold, terrain, moon };
   ColorMap cm = ColorMap::moon;
 
   float getTex(float x, float y, float z) {
     return texture.noise(x, y, z); 
+  }
+  uint32_t get_color(float x, float y, float z) {
+    float colorVal = getTex(x, y, z);
+    return colorMap(colorVal/2 + 0.5);
   }
   uint32_t colorMap(float f) {
     switch (cm) {

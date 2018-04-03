@@ -6,7 +6,7 @@
 std::vector<Planet> planets;
 std::array<Ball,1> balls;
 std::array<light,1> lights;
-ray camera;
+Ray camera;
 SimplexNoise background;
 
 void scene_sphere_init() {
@@ -18,7 +18,7 @@ void scene_sphere_init() {
 	//lights[1] = light(camera.origin);
 
 	balls[0].center = vec3(0, 0, 0);
-	balls[0].intensity = 0.1f;
+	balls[0].intensity = 1.0f;
 	balls[0].radius = 5;
 	balls[0].color = 0xFFFF00;
 
@@ -37,7 +37,7 @@ void scene_sphere_init() {
 	// add stars
 	for (float u = 0; u < M_PI*2; u=u+0.3f) {
 		for (float v = 0; v < M_PI*2; v=v+0.3f) {
-			ray r;
+			Ray r;
 			r.dir = vec3(sin(u)*cos(v), sin(u)*sin(v), cos(u));
 			vec3 starPos = r.origin + r.dir*1000;
 			float f = background.noise(starPos.x, starPos.y, starPos.z)/2 + 0.5;
@@ -51,16 +51,28 @@ void scene_sphere_init() {
 	}
 }
 
-bool check_collision(ray r, float& t, Planet** obj) {
+std::vector<Object*> get_all_objects() {
+	std::vector<Object*> objects;
+	for (int i = 0; i < planets.size(); i++) {
+		objects.push_back(&planets[i]);
+	}
+	for (int i = 0; i < balls.size(); i++) {
+		objects.push_back(&balls[i]);
+	}
+	return objects;
+}
+
+bool check_collision(Ray r, float& t, Object** obj) {
 	t = INF;
 	float tMin = INF;
-	for (int s = 0; s < planets.size(); s++) {
-		float t1 = planets[s].intersect(r);
+	std::vector<Object*> objects = get_all_objects();
+	for (int s = 0; s < objects.size(); s++) {
+		float t1 = objects[s]->intersect(r);
 		if (t1 < 0) continue;
 		// new shortest distance found
 		if (t1 < t) {
 			t = t1;
-			 *obj = &planets[s];
+			 *obj = objects[s];
 		}
 	}
 	if (t < INF) {
@@ -75,10 +87,10 @@ float calc_intensity(vec3 point, vec3 normal) {
 		light lightSource = lights[lix];
 		// do this stuff for each light if there are multiple ones
 		vec3 surf2Light = lightSource - point;
-		ray l = ray(point, surf2Light);
+		Ray l = Ray(point, surf2Light);
 		l.dir.normalize();
 		float t;
-		Planet* obj = nullptr;
+		Object* obj = nullptr;
 		bool lightSourceHidden = check_collision(l, t, &obj); // check if there is an object intersection on the light ray
 		lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
 		if (!lightSourceHidden) {
@@ -99,9 +111,9 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 	//camera.dir = (planets[0].center - camera.origin).normalize();
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
-			ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
+			Ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
 			float t;
-			Planet* obj = nullptr;
+			Object* obj = nullptr;
 			bool hasObject = check_collision(r, t, &obj); // check if there are any objects in view
 			if (hasObject) {
 				vec3 surfacePoint = r.origin + r.dir*t;
@@ -109,8 +121,7 @@ void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 				surfacePoint += normal*1e-3;
 				float lightIntensity = calc_intensity(surfacePoint, normal);
 				vec3 texCoords = (surfacePoint - obj->center).normalize();
-				float colorVal = obj->getTex(texCoords.x, texCoords.y, texCoords.z);
-				uint32_t color = obj->colorMap(colorVal/2 + 0.5);
+				uint32_t color = obj->get_color(texCoords.x, texCoords.y, texCoords.z);
 				color = change_lightning(color, lightIntensity);
 				put_pixel32(surface, x, y, color);
 			} else {
