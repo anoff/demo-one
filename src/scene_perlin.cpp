@@ -1,5 +1,5 @@
-#include "scene_perlin.h"
-#include "commons.h"
+#include "scene_perlin.hpp"
+#include "commons.hpp"
 
 float circleRadius = 150;
 int spotCount = 4;

@@ -1,7 +1,7 @@
 #ifndef COMMONS_H
 #define COMMONS_H
 
-#include "main.h"
+#include "main.hpp"
 
 // STRCUTS
 struct coord {

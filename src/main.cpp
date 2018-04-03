@@ -1,7 +1,7 @@
 #include <iostream>
-#include "main.h"
-#include "scene_perlin.h"
-#include "scene_sphere.h"
+#include "main.hpp"
+#include "scene_perlin.hpp"
+#include "scene_sphere.hpp"
 
 bool quit = false;
 int deltaT = 16;

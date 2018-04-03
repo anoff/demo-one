@@ -1,4 +1,4 @@
-#include "commons.h"
+#include "commons.hpp"
 #include <cmath>
 
 void put_pixel32(SDL_Surface *surface, int x, int y, uint32_t pixel) {

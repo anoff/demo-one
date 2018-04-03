@@ -1,6 +1,6 @@
-#include "main.h"
-#include "commons.h"
-#include "perlin.h"
+#include "main.hpp"
+#include "commons.hpp"
+#include "perlin.hpp"
 
 // https://en.wikipedia.org/wiki/Perlin_noise#Pseudocode
 // Function to linearly interpolate between a0 and a1

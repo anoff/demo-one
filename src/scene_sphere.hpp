@@ -7,10 +7,10 @@
 #include <cmath>
 #include <vector>
 
-#include "main.h"
-#include "ray.h"
-#include "commons.h"
-#include "simplex_noise.h"
+#include "main.hpp"
+#include "ray.hpp"
+#include "commons.hpp"
+#include "simplex_noise.hpp"
 
 using std::uint32_t;
 

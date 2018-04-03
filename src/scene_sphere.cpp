@@ -1,10 +1,10 @@
-#include "scene_sphere.h"
+#include "scene_sphere.hpp"
 
 #define INF 9999999
 #define MIN_ILLUMINATION 0.2f
 
 std::vector<Planet> planets;
-std::array<Ball,1> balls;
+std::vector<Ball> stars;
 std::array<light,1> lights;
 Ray camera;
 SimplexNoise background;
@@ -16,11 +16,12 @@ void scene_sphere_init() {
 
 	lights[0] = light(0, 10, 0, 0);
 	//lights[1] = light(camera.origin);
-
-	balls[0].center = vec3(0, 0, 0);
-	balls[0].intensity = 1.0f;
-	balls[0].radius = 5;
-	balls[0].color = 0xFFFF00;
+	Ball sun;
+	sun.center = vec3(0, 0, 0);
+	sun.intensity = 1.0f;
+	sun.radius = 5;
+	sun.color = 0xFFFF00;
+	stars.push_back(sun);
 
 	for (int i = 0; i < 5; i++) {
 		Planet p;
@@ -42,10 +43,11 @@ void scene_sphere_init() {
 			vec3 starPos = r.origin + r.dir*1000;
 			float f = background.noise(starPos.x, starPos.y, starPos.z)/2 + 0.5;
 			if (f > 0.8f) {
-				Planet s;
+				Ball s;
 				s.radius = 5;
 				s.center = starPos;
-				planets.push_back(s);
+				s.color = 0xffffd0;
+				stars.push_back(s);
 			}
 		}
 	}
@@ -56,8 +58,8 @@ std::vector<Object*> get_all_objects() {
 	for (int i = 0; i < planets.size(); i++) {
 		objects.push_back(&planets[i]);
 	}
-	for (int i = 0; i < balls.size(); i++) {
-		objects.push_back(&balls[i]);
+	for (int i = 0; i < stars.size(); i++) {
+		objects.push_back(&stars[i]);
 	}
 	return objects;
 }

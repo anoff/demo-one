@@ -1,5 +1,5 @@
-#include "ray.h"
-#include "main.h"
+#include "ray.hpp"
+#include "main.hpp"
 
 Ray generateViewport(int xP, int yP, Ray camera) {
   Ray res;
