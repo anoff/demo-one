@@ -92,8 +92,8 @@ struct Ray {
 
 struct Object {
   vec3 center;
-  uint32_t get_color(float x, float y, float z);
-  float intersect(Ray r);
+  virtual uint32_t get_color(float x, float y, float z) { return 0xFF0000; };
+  virtual float intersect(Ray r) { return .5f; };
 };
 
 struct Sphere : Object {
