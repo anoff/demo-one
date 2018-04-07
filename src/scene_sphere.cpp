@@ -36,6 +36,7 @@ void scene_sphere_init() {
 	planets[4].radius = 1;
 
 	// add stars
+	/*
 	for (float u = 0; u < M_PI*2; u=u+0.3f) {
 		for (float v = 0; v < M_PI*2; v=v+0.3f) {
 			Ray r;
@@ -50,7 +51,7 @@ void scene_sphere_init() {
 				stars.push_back(s);
 			}
 		}
-	}
+	}*/
 }
 
 std::vector<Object*> get_all_objects() {

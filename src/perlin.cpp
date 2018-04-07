@@ -1,4 +1,3 @@
-#include "main.hpp"
 #include "commons.hpp"
 #include "perlin.hpp"
 

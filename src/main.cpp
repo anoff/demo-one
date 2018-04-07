@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include "main.hpp"
 #include "scene_perlin.hpp"
 #include "scene_sphere.hpp"
@@ -6,14 +7,22 @@
 bool quit = false;
 int deltaT = 16;
 int cnt = 0;
+clock_t start;
 SDL_Window* window = NULL;
 SDL_Surface* screenSurface = NULL;
 
 void init() {
   scene_sphere_init();
+  scene_perlin_init();
+  clock_t start = clock();
 }
 void loop() {
-  scene_sphere_do(screenSurface, deltaT, cnt);
+  float elapsed_secs = double(clock() - start) / CLOCKS_PER_SEC;
+  if (elapsed_secs < 10) {
+    scene_perlin_do(screenSurface, deltaT, cnt);
+  } else {
+    scene_sphere_do(screenSurface, deltaT, cnt);
+  }
   SDL_UpdateWindowSurface(window);
   SDL_Delay(deltaT);
   SDL_Event event;

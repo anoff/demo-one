@@ -9,7 +9,7 @@
 using std::uint32_t;
 
 void scene_perlin_init();
-void scene_perlin_do(SDL_Surface *surface, int delta);
+void scene_perlin_do(SDL_Surface *surface, int delta, int cnt);
 
 #define SPOTS_MAX 5
 #define GLOW_RADIUS 30
