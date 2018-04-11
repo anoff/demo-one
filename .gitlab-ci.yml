@@ -1,8 +1,17 @@
-build asmjs:
+asmjs:
   image: trzeci/emscripten-slim
   script:
    - mkdir -p dist
    - em++ src/*.cpp -o dist/out.html -O3 -s USE_SDL=2 --shell-file assets/shell_minimal.html -std=c++11
+  artifacts:
+    paths:
+    - dist/
+
+web assembly:
+  image: trzeci/emscripten-slim
+  script:
+   - mkdir -p dist
+   - em++ src/*.cpp -o dist/out-wasm.html -O3 -s USE_SDL=2 --shell-file assets/shell_minimal.html -std=c++11 -s WASM=1
   artifacts:
     paths:
     - dist/
