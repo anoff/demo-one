@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <cstdint>
 
 struct vec3 {
   float x;
