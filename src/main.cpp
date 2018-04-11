@@ -18,7 +18,7 @@ void init() {
 }
 void loop() {
   float elapsed_secs = double(clock() - start) / CLOCKS_PER_SEC;
-  if (elapsed_secs < 10) {
+  if (((int)elapsed_secs)%10 < 5) {
     scene_perlin_do(screenSurface, deltaT, cnt);
   } else {
     scene_sphere_do(screenSurface, deltaT, cnt);

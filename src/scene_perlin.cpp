@@ -41,8 +41,8 @@ void scene_perlin_do(SDL_Surface *surface, int delta, int cnt) {
 	if (cnt % (int)(200 / delta) == 0) {
 		velP.initPerlin();
 	}
-	if (cnt % (int)(500 / delta) == 0) {
-		spotCount = rand() % SPOTS_MAX + 1;
+	if (cnt % (int)(800 / delta) == 0) {
+		spotCount = rand() % SPOTS_MAX + 2;
 		for (int s = 0; s < SPOTS_MAX; s++) {
 			spots[s].center.x = 0;
 			spots[s].center.y = 0;
