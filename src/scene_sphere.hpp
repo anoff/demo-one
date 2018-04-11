@@ -38,7 +38,7 @@ struct Ball : Sphere {
 
 struct Planet : Sphere {
   SimplexNoise texture;
-  enum ColorMap { grayscale, hotcold, terrain, moon };
+  enum ColorMap { grayscale, hotcold, terrain, moon, lava, sun };
   ColorMap cm = ColorMap::moon;
 
   float getTex(float x, float y, float z) {
@@ -53,7 +53,9 @@ struct Planet : Sphere {
       case grayscale: return cm_grayscale(f);
       case terrain: return cm_terrain(f);
       case hotcold: return cm_hot_cold(f);
-      case moon: return cm_grayscale(2*f);
+      case lava: return cm_hot_cold(f/2 + 0.5f);
+      case moon: return cm_grayscale(f/2 + 0.3f);
+      case sun: return cm_hot_cold(f/8 + 0.6f);
       default: return cm_grayscale(f);
     }
   }

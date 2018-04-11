@@ -14,7 +14,7 @@ void scene_sphere_init() {
 	camera.dir = camera.origin * -1.f;
 	camera.dir.normalize();
 
-	lights[0] = light(0, 10, 0, 0);
+	lights[0] = light(0, 4, 0, 1);
 	//lights[1] = light(camera.origin);
 	Ball sun;
 	sun.center = vec3(0, 0, 0);
@@ -23,7 +23,7 @@ void scene_sphere_init() {
 	sun.color = 0xFFFF00;
 	stars.push_back(sun);
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 4; i++) {
 		Planet p;
 		planets.push_back(p);
 	}
@@ -31,9 +31,9 @@ void scene_sphere_init() {
 	planets[0].cm = Planet::ColorMap::terrain;
 	planets[1].radius = 2;
 	planets[2].radius = 3;
-	planets[2].cm = Planet::ColorMap::terrain;
-	planets[3].radius = 1;
-	planets[4].radius = 1;
+	planets[2].cm = Planet::ColorMap::lava;
+	planets[3].radius = 2;
+	planets[3].cm = Planet::ColorMap::sun;
 
 	// add stars
 	/*
@@ -65,17 +65,16 @@ std::vector<Object*> get_all_objects() {
 	return objects;
 }
 
-bool check_collision(Ray r, float& t, Object** obj) {
+bool check_collision(Ray r, float& t, Planet** obj) {
 	t = INF;
 	float tMin = INF;
-	std::vector<Object*> objects = get_all_objects();
-	for (int s = 0; s < objects.size(); s++) {
-		float t1 = objects[s]->intersect(r);
+	for (int s = 0; s < planets.size(); s++) {
+		float t1 = planets[s].intersect(r);
 		if (t1 < 0) continue;
 		// new shortest distance found
 		if (t1 < t) {
 			t = t1;
-			 *obj = objects[s];
+			 *obj = &planets[s];
 		}
 	}
 	if (t < INF) {
@@ -93,7 +92,7 @@ float calc_intensity(vec3 point, vec3 normal) {
 		Ray l = Ray(point, surf2Light);
 		l.dir.normalize();
 		float t;
-		Object* obj = nullptr;
+		Planet* obj = nullptr;
 		bool lightSourceHidden = check_collision(l, t, &obj); // check if there is an object intersection on the light ray
 		lightSourceHidden = lightSourceHidden && t < surf2Light.length(); // and object is closer than the light source
 		if (!lightSourceHidden) {
@@ -107,16 +106,14 @@ float calc_intensity(vec3 point, vec3 normal) {
 void scene_sphere_do(SDL_Surface *surface, int delta, int cnt) {
 	planets[0].center = vec3(60*sin(cnt/73.f), 0, 40*cos(cnt/73.f));
 	planets[1].center = vec3(20*sin(cnt/13.f), 0, 20*cos(cnt/13.f)) + planets[0].center;
-	planets[2].center = vec3(9*sin(cnt/33.f), 0, -9*cos(cnt/33.f));
-	planets[3].center = vec3(4*sin(cnt/8.f), 0, 4*cos(cnt/8.f)) + planets[2].center;
-	planets[4].center = vec3(4*sin(cnt/8.f + M_PI/2.f), 0, 4*cos(cnt/8.f + M_PI/2.f)) + planets[2].center;
+	planets[2].center = vec3(13*sin(cnt/33.f), 0, -13*cos(cnt/33.f));
 
 	//camera.dir = (planets[0].center - camera.origin).normalize();
 	for (int y = 0; y<surface->h; y++) {
 		for (int x = 0; x<surface->w; x++) {
 			Ray r = generateViewport(x, y, camera); // generate a ray from the camera position through the current pixel position
 			float t;
-			Object* obj = nullptr;
+			Planet* obj = nullptr;
 			bool hasObject = check_collision(r, t, &obj); // check if there are any objects in view
 			if (hasObject) {
 				vec3 surfacePoint = r.origin + r.dir*t;
