@@ -9,6 +9,7 @@ A list of noteworthy (lol) commits:
 
 | Description | Preview | ASM | Commit |
 |-------------|---------|-----|--------|
+| Perlin & rotating planets changing scene | <img width="200px" src="assets/perlin_planets.gif"> | [web (broken colors)](https://anoff.gitlab.io/-/demo-one/-/jobs/62464996/artifacts/dist/out-wasm.html) | [3d2a99d6](https://github.com/anoff/demo-one/tree/3d2a99d6c847229a14c34068ad33e9051cb0163b) |
 | Colored rotating spheres arount a lightsource | <img width="200px" src="assets/rotating_spheres.png"> | [web](https://anoff.gitlab.io/-/demo-one/-/jobs/60587458/artifacts/out.html) | [33260db8](https://github.com/anoff/demo-one/tree/33260db8bdb1c9b992e397d82d66cabafcf51c55) |
 | Rotating spots over _living_ Perlin noise | <img width="200px" src="assets/rotating_perlin.png"> | [web](https://anoff.gitlab.io/-/demo-one/-/jobs/60521678/artifacts/out.html) | [d9f9646](https://github.com/anoff/demo-one/tree/d9f9646b8a592df3cea18bc66139731f69669626) |
 | Bugged _moving_ Perlin noise that ends up looking like flames | <img width="200px" src="assets/flames.png"> | n/a | [f638eaa](https://github.com/anoff/demo-one/tree/f638eaa777b1a3ff46dc291b4805cc726e273499) |
